@@ -8,7 +8,7 @@ int main() {
 
     long N = 1;
     long last = nodePerLevel[0];
-    for (auto &i: nodePerLevel) {
+    for (auto i: nodePerLevel) {
         N += last * i;
         last *= i;
     }

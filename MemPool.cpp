@@ -38,7 +38,7 @@ void *malloc() {
 }
 size_t indexOf(void *ptr) {
   auto offset =
-      reinterpret_cast<uintptr_t>(ptr) - reinterpret_cast<uintptr_t>(AVAIL_PTR);
+      reinterpret_cast<uintptr_t>(ptr) - reinterpret_cast<uintptr_t>(MEM_POOL);
   return offset / CHUNK_SIZE;
 }
 

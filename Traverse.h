@@ -140,7 +140,7 @@ struct TraverseSOA : Traverse {
             auto overlapCounter = 0;
             for (auto *child: t->children) {
                 // auto child_id = child->id;
-                auto child_id = data.address2id[reinterpret_cast<uint64_t>(child)];
+                auto child_id = MemPool::indexOf(child);
                 if (data.r_hasOverlapWithParent(child_id)) {
                     overlapCounter += 1;
                 }
