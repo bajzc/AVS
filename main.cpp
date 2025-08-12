@@ -29,7 +29,11 @@ int main() {
     data.hasOverlapWithChild.resize(N);
     data.hasOverlapWithParent.resize(N);
     data.childOverlapsEachOtherAndThis.resize(N);
-    
+    data.param1.resize(N);
+    data.param2.resize(N);
+    data.param3.resize(N);
+    data.param4.resize(N);
+
     // root->printTree(data);
     TraverseSOA visitor(root, data);
 #endif

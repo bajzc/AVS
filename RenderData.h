@@ -30,12 +30,13 @@ struct RenderData {
     PlaceHolder<1024> g1;
     Rectangle<int> selfRect;
 #if AOS
-    uint64_t intersectAreaWithChild;
+    int intersectAreaWithChild;
     bool hasOverlap;
     bool hasChild;
     bool hasOverlapWithChild;
     bool hasOverlapWithParent;
     bool childOverlapsEachOtherAndThis; // children And This
+    bool param1, param2, param3, param4;
 #endif
     PlaceHolder<1024> g2;
 };
@@ -46,17 +47,28 @@ struct GlobalData {
     boost::dynamic_bitset<> hasOverlapWithChild;
     boost::dynamic_bitset<> hasOverlapWithParent;
     boost::dynamic_bitset<> childOverlapsEachOtherAndThis;
-    std::vector<uint64_t> intersectAreaWithChild;
+    boost::dynamic_bitset<> param1;
+    boost::dynamic_bitset<> param2;
+    boost::dynamic_bitset<> param3;
+    boost::dynamic_bitset<> param4;
+
+    std::vector<int> intersectAreaWithChild;
 #define DEFINE_BITSET_ACCESSORS(NAME)                                                                                  \
-inline bool r_##NAME(int i) { return NAME[i]; }                                                                    \
-inline void w_##NAME(int i, bool v) { NAME[i] = v; }
+    inline bool r_##NAME(int i) { return NAME[i]; }                                                                    \
+    inline void w_##NAME(int i, bool v) { NAME[i] = v; }
 
     DEFINE_BITSET_ACCESSORS(hasOverlap)
     DEFINE_BITSET_ACCESSORS(hasChild)
     DEFINE_BITSET_ACCESSORS(hasOverlapWithChild)
     DEFINE_BITSET_ACCESSORS(hasOverlapWithParent)
     DEFINE_BITSET_ACCESSORS(childOverlapsEachOtherAndThis)
-
+    inline void pinCache() {
+        __builtin_prefetch(&hasOverlap);
+        __builtin_prefetch(&hasChild);
+        __builtin_prefetch(&hasOverlapWithChild);
+        __builtin_prefetch(&hasOverlapWithParent);
+        __builtin_prefetch(&childOverlapsEachOtherAndThis);
+    }
 };
 
 #endif // DATA_H

@@ -26,6 +26,8 @@ struct Traverse {
             cur = root;
         }
         preCheck(cur);
+        memset(cur->data.g1.garbage, 2, sizeof(cur->data.g1.garbage));
+        memset(cur->data.g2.garbage, 4, sizeof(cur->data.g2.garbage));
         for (auto *child: cur->children) {
             check(child);
         }
@@ -37,6 +39,8 @@ struct Traverse {
             cur = root;
         }
         preVisit(cur);
+        memset(cur->data.g1.garbage, 2, sizeof(cur->data.g1.garbage));
+        memset(cur->data.g2.garbage, 4, sizeof(cur->data.g2.garbage));
         for (auto *child: cur->children) {
             go(child);
         }
@@ -76,13 +80,10 @@ struct TraverseAOS : Traverse {
         if (t->data.hasChild) {
             t->data.hasOverlapWithChild = t->data.intersectAreaWithChild;
             if (t->data.hasOverlapWithChild) {
-                for (auto *child: t->children) {
-                    if (t->data.selfRect.intersectArea(child->data.selfRect))
-                        child->data.hasOverlapWithParent = true;
-                }
                 auto overlapCounter = 0;
                 for (auto *child: t->children) {
-                    if (child->data.hasOverlapWithParent) {
+                    if (t->data.selfRect.intersectArea(child->data.selfRect)) {
+                        child->data.hasOverlapWithParent = true;
                         overlapCounter += 1;
                     }
                 }
@@ -97,6 +98,18 @@ struct TraverseAOS : Traverse {
             totalOverlap += 1;
         if (t->data.childOverlapsEachOtherAndThis)
             totalOverlap += 2;
+        if (t->data.hasOverlap) {
+            t->data.param1 = true;
+            t->data.param2 = true;
+            t->data.param3 = false;
+            t->data.param4 = false;
+        }else {
+            t->data.param1 = false;
+            t->data.param2 = false;
+            t->data.param3 = true;
+            t->data.param4 = true;
+        }
+
     }
 };
 
@@ -130,34 +143,43 @@ struct TraverseSOA : Traverse {
     }
 
     void preCheck(Tree *t) override {
-        data.w_hasChild(t->id, t->children.size());
-        if (data.r_hasChild(t->id)) {
-            data.w_hasOverlapWithChild(t->id, data.intersectAreaWithChild[t->id] > 0);
-            if (data.r_hasOverlapWithChild(t->id)) {
-                for (auto *child: t->children) {
-                    if (t->data.selfRect.intersectArea(child->data.selfRect))
-                        data.w_hasOverlapWithParent(child->id, true);
-                }
+        auto id = MemPool::indexOf(t);
+        data.w_hasChild(id, t->children.size());
+        if (data.r_hasChild(id)) {
+            data.w_hasOverlapWithChild(id, data.intersectAreaWithChild[id] > 0);
+            if (data.r_hasOverlapWithChild(id)) {
                 auto overlapCounter = 0;
+
                 for (auto *child: t->children) {
-                    // auto child_id = child->id;
-                    auto child_id = MemPool::indexOf(child);
-                    if (data.r_hasOverlapWithParent(child_id)) {
+                    auto childId = MemPool::indexOf(child);
+                    if (t->data.selfRect.intersectArea(child->data.selfRect)) {
+                        data.w_hasOverlapWithParent(childId, true);
                         overlapCounter += 1;
                     }
                 }
-                data.w_childOverlapsEachOtherAndThis(t->id, overlapCounter > 1);
+                data.w_childOverlapsEachOtherAndThis(id, overlapCounter > 1);
             }
         }
     }
 
-
     void postCheck(Tree *t) override {
-        data.w_hasOverlap(t->id, data.r_hasOverlapWithParent(t->id) | data.r_hasOverlapWithChild(t->id));
-        if (data.r_hasOverlap(t->id))
+        auto id = MemPool::indexOf(t);
+        data.w_hasOverlap(id, data.r_hasOverlapWithParent(id) | data.r_hasOverlapWithChild(id));
+        if (data.r_hasOverlap(id))
             totalOverlap += 1;
-        if (data.r_childOverlapsEachOtherAndThis(t->id))
+        if (data.r_childOverlapsEachOtherAndThis(id))
             totalOverlap += 2;
+        if (data.hasOverlap[id]) {
+            data.param1[id] = true;
+            data.param2[id] = true;
+            data.param3[id] = false;
+            data.param4[id] = false;
+        }else {
+            data.param1[id] = false;
+            data.param2[id] = false;
+            data.param3[id] = true;
+            data.param4[id] = true;
+        }
     }
 };
 #endif
