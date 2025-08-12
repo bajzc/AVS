@@ -7,6 +7,8 @@ rm -vf callgrind* cachegrind*
 cmake -B build .
 cmake --build build
 
-valgrind --tool=callgrind --cache-sim=yes --dump-instr=yes --callgrind-out-file=callgrind.soa.out ./build/soa
+valgrind --tool=callgrind --cache-sim=yes --dump-instr=yes --callgrind-out-file=callgrind.soa.out \
+         --D1=4096,8,64 ./build/soa
 
-valgrind --tool=callgrind --cache-sim=yes --dump-instr=yes --callgrind-out-file=callgrind.aos.out ./build/aos
+valgrind --tool=callgrind --cache-sim=yes --dump-instr=yes --callgrind-out-file=callgrind.aos.out \
+         --D1=4096,8,64 ./build/aos

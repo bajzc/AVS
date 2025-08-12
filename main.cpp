@@ -3,7 +3,7 @@
 #include "Tree.h"
 
 int main() {
-    std::vector<int> nodePerLevel = {1, 2, 1, 1, 1, 2, 2, 2, 2, 2, 3};
+    std::vector<int> nodePerLevel = {1, 2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 1};
 
     long N = 1;
     long last = nodePerLevel[0];
@@ -29,10 +29,7 @@ int main() {
     data.hasOverlapWithChild.resize(N);
     data.hasOverlapWithParent.resize(N);
     data.childOverlapsEachOtherAndThis.resize(N);
-    data.param1.resize(N);
-    data.param2.resize(N);
-    data.param3.resize(N);
-    data.param4.resize(N);
+    data.params.resize(N * 4);
 
     // root->printTree(data);
     TraverseSOA visitor(root, data);

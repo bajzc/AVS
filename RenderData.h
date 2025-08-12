@@ -14,6 +14,13 @@
 template<std::size_t N>
 struct PlaceHolder {
     char garbage[N];
+    inline void r() {
+        uint8_t sum = 0;
+        for (int i = 0; i < N; i++) {
+            sum += garbage[i];
+        }
+        memset(garbage, sum, sizeof(garbage));
+    }
 };
 
 #define CACHE_SIZE 512
@@ -36,9 +43,10 @@ struct RenderData {
     bool hasOverlapWithChild;
     bool hasOverlapWithParent;
     bool childOverlapsEachOtherAndThis; // children And This
-    bool param1, param2, param3, param4;
 #endif
+    bool param1, param2, param3, param4;
     PlaceHolder<1024> g2;
+    PlaceHolder<1024*8> g3;
 };
 
 struct GlobalData {
@@ -47,10 +55,7 @@ struct GlobalData {
     boost::dynamic_bitset<> hasOverlapWithChild;
     boost::dynamic_bitset<> hasOverlapWithParent;
     boost::dynamic_bitset<> childOverlapsEachOtherAndThis;
-    boost::dynamic_bitset<> param1;
-    boost::dynamic_bitset<> param2;
-    boost::dynamic_bitset<> param3;
-    boost::dynamic_bitset<> param4;
+    boost::dynamic_bitset<> params;
 
     std::vector<int> intersectAreaWithChild;
 #define DEFINE_BITSET_ACCESSORS(NAME)                                                                                  \

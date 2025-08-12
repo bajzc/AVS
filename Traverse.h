@@ -26,10 +26,10 @@ struct Traverse {
             cur = root;
         }
         preCheck(cur);
-        memset(cur->data.g1.garbage, 2, sizeof(cur->data.g1.garbage));
-        memset(cur->data.g2.garbage, 4, sizeof(cur->data.g2.garbage));
+        cur->data.g3.r();
         for (auto *child: cur->children) {
             check(child);
+            child->data.g3.r();
         }
         postCheck(cur);
     }
@@ -39,10 +39,10 @@ struct Traverse {
             cur = root;
         }
         preVisit(cur);
-        memset(cur->data.g1.garbage, 2, sizeof(cur->data.g1.garbage));
-        memset(cur->data.g2.garbage, 4, sizeof(cur->data.g2.garbage));
+        cur->data.g3.r();
         for (auto *child: cur->children) {
             go(child);
+        cur->data.g3.r();
         }
         postVisit(cur);
     }
@@ -98,18 +98,19 @@ struct TraverseAOS : Traverse {
             totalOverlap += 1;
         if (t->data.childOverlapsEachOtherAndThis)
             totalOverlap += 2;
-        if (t->data.hasOverlap) {
-            t->data.param1 = true;
-            t->data.param2 = true;
-            t->data.param3 = false;
-            t->data.param4 = false;
-        }else {
-            t->data.param1 = false;
-            t->data.param2 = false;
-            t->data.param3 = true;
-            t->data.param4 = true;
+        for (auto child : t->children) {
+            if (t->data.hasOverlap && child->data.hasOverlapWithParent && child->data.hasOverlapWithChild) {
+                t->data.param1 = true;
+                t->data.param2 = true;
+                t->data.param3 = false;
+                t->data.param4 = false;
+            } else {
+                t->data.param1 = false;
+                t->data.param2 = false;
+                t->data.param3 = true;
+                t->data.param4 = true;
+            }
         }
-
     }
 };
 
@@ -143,7 +144,8 @@ struct TraverseSOA : Traverse {
     }
 
     void preCheck(Tree *t) override {
-        auto id = MemPool::indexOf(t);
+        // auto id = MemPool::indexOf(t);
+        auto id = t->id;
         data.w_hasChild(id, t->children.size());
         if (data.r_hasChild(id)) {
             data.w_hasOverlapWithChild(id, data.intersectAreaWithChild[id] > 0);
@@ -163,22 +165,26 @@ struct TraverseSOA : Traverse {
     }
 
     void postCheck(Tree *t) override {
-        auto id = MemPool::indexOf(t);
+        auto id = t->id;
         data.w_hasOverlap(id, data.r_hasOverlapWithParent(id) | data.r_hasOverlapWithChild(id));
         if (data.r_hasOverlap(id))
             totalOverlap += 1;
         if (data.r_childOverlapsEachOtherAndThis(id))
             totalOverlap += 2;
-        if (data.hasOverlap[id]) {
-            data.param1[id] = true;
-            data.param2[id] = true;
-            data.param3[id] = false;
-            data.param4[id] = false;
-        }else {
-            data.param1[id] = false;
-            data.param2[id] = false;
-            data.param3[id] = true;
-            data.param4[id] = true;
+        for (auto child: t->children) {
+            auto childId = MemPool::indexOf(child);
+            if (data.hasOverlap[id] && data.r_hasOverlapWithParent(childId) && data.r_hasOverlapWithChild(childId)) {
+                t->data.param1 = true;
+                t->data.param2 = true;
+                t->data.param3 = false;
+                t->data.param4 = false;
+            } else {
+                t->data.param1 = false;
+                t->data.param2 = false;
+                t->data.param3 = true;
+                t->data.param4 = true;
+
+            }
         }
     }
 };
