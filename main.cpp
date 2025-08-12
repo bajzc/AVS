@@ -1,7 +1,9 @@
+#include "MemPool.h"
 #include "Traverse.h"
 #include "Tree.h"
 
 int main() {
+    MemPool::memInit(sizeof(Tree));
     std::vector<int> nodePerLevel = {1, 2, 1, 1, 1, 2, 2, 2, 2, 2, 3, 8, 100};
 
     long N = 1;
@@ -36,4 +38,5 @@ int main() {
     //    root->printTree();
 
     visitor.finish();
+    MemPool::memDestroy();
 }

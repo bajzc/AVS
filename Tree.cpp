@@ -3,6 +3,7 @@
 #include <queue>
 
 #include "Tree.h"
+#include "MemPool.h"
 #include "RenderData.h"
 
 #define SEED 1145 // time(nullptr)
@@ -24,7 +25,7 @@ Tree *createRandomTree(const std::vector<int> &nodePerLevel) {
     std::uniform_int_distribution<> heightDist(0, SCREEN_HEIGHT);
 
     int id_counter = 0;
-    Tree *root = new Tree(id_counter++);
+    Tree *root = new(MemPool::malloc()) Tree(id_counter++);
     root->data.colour = {colourDist(rng), colourDist(rng), colourDist(rng)};
     root->data.selfRect = Rectangle<int>(widthDist(rng), heightDist(rng), widthDist(rng), heightDist(rng));
 
@@ -40,7 +41,7 @@ Tree *createRandomTree(const std::vector<int> &nodePerLevel) {
             q.pop();
 
             for (int c = 0; c < num_children_per_node; ++c) {
-                Tree *child = new Tree(id_counter++);
+                Tree *child = new(MemPool::malloc()) Tree(id_counter++);
 
                 child->data.colour = {colourDist(rng), colourDist(rng), colourDist(rng)};
                 child->data.selfRect = Rectangle<int>(widthDist(rng), heightDist(rng), widthDist(rng), heightDist(rng));
@@ -63,7 +64,7 @@ Tree* createRandomTree(const std::vector<int> &nodePerLevel, GlobalData& globalD
     std::uniform_int_distribution<> heightDist(0, SCREEN_HEIGHT);
 
     int id_counter = 0;
-    Tree* root = new Tree(id_counter++);
+    Tree* root = new(MemPool::malloc()) Tree(id_counter++);
 
     root->data.colour = {colourDist(rng), colourDist(rng), colourDist(rng)};
     root->data.selfRect = Rectangle<int>(widthDist(rng), heightDist(rng), widthDist(rng), heightDist(rng));
@@ -80,7 +81,7 @@ Tree* createRandomTree(const std::vector<int> &nodePerLevel, GlobalData& globalD
             Tree* parent = q.front(); q.pop();
 
             for (int c = 0; c < num_children_per_node; ++c) {
-                Tree* child = new Tree(id_counter++);
+                Tree* child = new(MemPool::malloc()) Tree(id_counter++);
 
                 child->data.colour = {colourDist(rng), colourDist(rng), colourDist(rng)};
                 child->data.selfRect = Rectangle<int>(widthDist(rng), heightDist(rng), widthDist(rng), heightDist(rng));

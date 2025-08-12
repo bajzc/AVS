@@ -11,6 +11,7 @@ add_executable(aos
         Tree.cpp
         RenderData.h
         Rectangle.h
+        MemPool.cpp
 )
 
 target_compile_definitions(aos PRIVATE AOS=1)
@@ -22,6 +23,7 @@ add_executable(soa
         Tree.cpp
         RenderData.h
         Rectangle.h
+        MemPool.cpp
 )
 
 target_compile_definitions(soa PRIVATE SOA=1)
