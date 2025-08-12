@@ -3,8 +3,7 @@
 #include "Tree.h"
 
 int main() {
-    MemPool::memInit(sizeof(Tree));
-    std::vector<int> nodePerLevel = {1, 2, 1, 1, 1, 2, 2, 2, 2, 2, 3, 8, 100};
+    std::vector<int> nodePerLevel = {1, 2, 1, 1, 1, 2, 2, 2, 2, 2, 3};
 
     long N = 1;
     long last = nodePerLevel[0];
@@ -21,7 +20,10 @@ int main() {
     TraverseAOS visitor(root);
 #endif
 #if SOA
+    MemPool::memInit(sizeof(Tree));
+    assert(N * MemPool::CHUNK_SIZE < MEM_POOL_SIZE);
     Tree *root = createRandomTree(nodePerLevel, data);
+    data.intersectAreaWithChild.resize(N);
     data.hasOverlap.resize(N);
     data.hasChild.resize(N);
     data.hasOverlapWithChild.resize(N);
@@ -38,5 +40,7 @@ int main() {
     //    root->printTree();
 
     visitor.finish();
+#if SOA
     MemPool::memDestroy();
+#endif
 }

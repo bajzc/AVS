@@ -119,8 +119,9 @@ struct TraverseSOA : Traverse {
         for (auto *child: t->children) {
             rect = rect.intersectRect(child->data.selfRect);
         }
-        t->data.intersectAreaWithChild= rect.area();
-        totalIntersectArea += t->data.intersectAreaWithChild;
+        auto area = rect.area();
+        data.intersectAreaWithChild[MemPool::indexOf(t)] = area;
+        totalIntersectArea += area;
     }
 
     void finish() override {
@@ -131,21 +132,22 @@ struct TraverseSOA : Traverse {
     void preCheck(Tree *t) override {
         data.w_hasChild(t->id, t->children.size());
         if (data.r_hasChild(t->id)) {
-            data.w_hasOverlapWithChild(t->id, t->data.intersectAreaWithChild> 0);
-            if (data.r_hasOverlapWithChild(t->id))
+            data.w_hasOverlapWithChild(t->id, data.intersectAreaWithChild[t->id] > 0);
+            if (data.r_hasOverlapWithChild(t->id)) {
                 for (auto *child: t->children) {
                     if (t->data.selfRect.intersectArea(child->data.selfRect))
                         data.w_hasOverlapWithParent(child->id, true);
                 }
-            auto overlapCounter = 0;
-            for (auto *child: t->children) {
-                // auto child_id = child->id;
-                auto child_id = MemPool::indexOf(child);
-                if (data.r_hasOverlapWithParent(child_id)) {
-                    overlapCounter += 1;
+                auto overlapCounter = 0;
+                for (auto *child: t->children) {
+                    // auto child_id = child->id;
+                    auto child_id = MemPool::indexOf(child);
+                    if (data.r_hasOverlapWithParent(child_id)) {
+                        overlapCounter += 1;
+                    }
                 }
+                data.w_childOverlapsEachOtherAndThis(t->id, overlapCounter > 1);
             }
-            data.w_childOverlapsEachOtherAndThis(t->id, overlapCounter > 1);
         }
     }
 

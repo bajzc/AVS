@@ -29,24 +29,24 @@ struct RenderData {
     Colour colour;
     PlaceHolder<1024> g1;
     Rectangle<int> selfRect;
-    PlaceHolder<1024> g2;
-    uint64_t intersectAreaWithChild;
 #if AOS
+    uint64_t intersectAreaWithChild;
     bool hasOverlap;
     bool hasChild;
     bool hasOverlapWithChild;
     bool hasOverlapWithParent;
     bool childOverlapsEachOtherAndThis; // children And This
 #endif
+    PlaceHolder<1024> g2;
 };
 
 struct GlobalData {
-    std::unordered_map<uint64_t, int> address2id;
     boost::dynamic_bitset<> hasOverlap;
     boost::dynamic_bitset<> hasChild;
     boost::dynamic_bitset<> hasOverlapWithChild;
     boost::dynamic_bitset<> hasOverlapWithParent;
     boost::dynamic_bitset<> childOverlapsEachOtherAndThis;
+    std::vector<uint64_t> intersectAreaWithChild;
 #define DEFINE_BITSET_ACCESSORS(NAME)                                                                                  \
 inline bool r_##NAME(int i) { return NAME[i]; }                                                                    \
 inline void w_##NAME(int i, bool v) { NAME[i] = v; }
