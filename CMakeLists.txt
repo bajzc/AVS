@@ -4,6 +4,8 @@ set(CMAKE_BUILD_TYPE "RelWithDebInfo")
 
 set(CMAKE_CXX_STANDARD 17)
 
+option(OPTIMIZE_FOR_NATIVE "Build with -march=native" ON)
+
 find_package(Boost REQUIRED container)
 
 add_executable(aos
@@ -16,7 +18,6 @@ add_executable(aos
 
 target_compile_definitions(aos PRIVATE AOS=1)
 target_link_libraries(aos PRIVATE Boost::container)
-
 
 add_executable(soa
         main.cpp

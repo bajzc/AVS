@@ -14,12 +14,14 @@
 template<std::size_t N>
 struct PlaceHolder {
     char garbage[N];
-    inline void r() {
+    void r() {
         uint8_t sum = 0;
         for (int i = 0; i < N; i++) {
             sum += garbage[i];
         }
-        memset(garbage, sum, sizeof(garbage));
+        for (int i = 0; i < N; i++) {
+            garbage[i] = sum;
+        }
     }
 };
 
@@ -27,10 +29,6 @@ struct PlaceHolder {
 #define ELEMENT_SIZE 32
 #define VECTOR_SIZE (CACHE_SIZE * 4 / ELEMENT_SIZE)
 #define LIKELY(x) __builtin_expect(!!(x), 1)
-
-struct alignas(64) AlignedBitset512 {
-    std::bitset<CACHE_SIZE> data;
-};
 
 struct RenderData {
     Colour colour;
@@ -40,16 +38,17 @@ struct RenderData {
     int intersectAreaWithChild;
     bool hasOverlap;
     bool hasChild;
+    PlaceHolder<512> g5;
     bool hasOverlapWithChild;
     bool hasOverlapWithParent;
     bool childOverlapsEachOtherAndThis; // children And This
 #endif
-    PlaceHolder<1024> g2;
+    PlaceHolder<1024 * 128> g2;
     bool param1, param2, param3, param4;
-    PlaceHolder<1024*128> g3;
+    PlaceHolder<1024 * 1024> g3;
 };
 
-struct GlobalData {
+struct alignas(64) GlobalData {
     std::bitset<512> hasOverlap;
     std::bitset<512> hasChild;
     std::bitset<512> hasOverlapWithChild;

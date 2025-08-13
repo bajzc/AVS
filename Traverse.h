@@ -26,12 +26,12 @@ struct Traverse {
             cur = root;
         }
         preCheck(cur);
-        cur->data.g3.r();
+        // cur->data.g3.r();
         for (auto *child: cur->children) {
             check(child);
-            child->data.g3.r();
         }
         postCheck(cur);
+        cur->data.g2.r();
     }
 
     void go(Tree *cur = nullptr) {
@@ -39,12 +39,11 @@ struct Traverse {
             cur = root;
         }
         preVisit(cur);
-        cur->data.g3.r();
         for (auto *child: cur->children) {
             go(child);
-        cur->data.g3.r();
         }
         postVisit(cur);
+        cur->data.g3.r();
     }
 };
 
@@ -90,27 +89,13 @@ struct TraverseAOS : Traverse {
                 t->data.childOverlapsEachOtherAndThis = overlapCounter > 1;
             }
         }
+        t->data.hasOverlap = t->data.hasOverlapWithParent | t->data.hasOverlapWithChild;
     }
 
     void postCheck(Tree *t) override {
-        t->data.hasOverlap = t->data.hasOverlapWithParent | t->data.hasOverlapWithChild;
-        if (t->data.hasOverlap)
-            totalOverlap += 1;
-        if (t->data.childOverlapsEachOtherAndThis)
-            totalOverlap += 2;
-        // for (auto child : t->children) {
-        //     if (t->data.hasOverlap && child->data.hasOverlapWithParent && child->data.hasOverlapWithChild) {
-        //         t->data.param1 = true;
-        //         t->data.param2 = true;
-        //         t->data.param3 = false;
-        //         t->data.param4 = false;
-        //     } else {
-        //         t->data.param1 = false;
-        //         t->data.param2 = false;
-        //         t->data.param3 = true;
-        //         t->data.param4 = true;
-        //     }
-        // }
+        if(t->data.hasOverlap){
+            t->data.hasOverlap = false;
+        }
     }
 };
 
@@ -162,16 +147,16 @@ struct TraverseSOA : Traverse {
                 data.w_childOverlapsEachOtherAndThis(id, overlapCounter > 1);
             }
         }
+        data.w_hasOverlap(id, data.r_hasOverlapWithParent(id) | data.r_hasOverlapWithChild(id));
     }
 
     void postCheck(Tree *t) override {
+        __builtin_prefetch(&data.hasOverlap, 1, 3);
         auto id = MemPool::indexOf(t);
-        // auto id = t->id;
-        data.w_hasOverlap(id, data.r_hasOverlapWithParent(id) | data.r_hasOverlapWithChild(id));
-        if (data.r_hasOverlap(id))
-            totalOverlap += 1;
-        if (data.r_childOverlapsEachOtherAndThis(id))
-            totalOverlap += 2;
+        if(data.r_hasOverlap(id)){
+            data.w_hasOverlap(id, false);
+            
+        }
     }
 };
 #endif

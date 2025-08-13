@@ -13,7 +13,7 @@ int main() {
     }
     std::cout << "total node number = " << N << "\n";
 
-    GlobalData data;
+    auto *data = new(aligned_alloc(64, sizeof(GlobalData))) GlobalData();
 #if AOS
     Tree *root = createRandomTree(nodePerLevel);
 //    root->printTree();
@@ -22,8 +22,8 @@ int main() {
 #if SOA
     MemPool::memInit();
     assert(N * MemPool::CHUNK_SIZE < MEM_POOL_SIZE);
-    Tree *root = createRandomTree(nodePerLevel, data);
-    data.intersectAreaWithChild.resize(N);
+    Tree *root = createRandomTree(nodePerLevel, *data);
+    data->intersectAreaWithChild.resize(N);
     // data.hasOverlap.resize(N);
     // data.hasChild.resize(N);
     // data.hasOverlapWithChild.resize(N);
@@ -32,7 +32,7 @@ int main() {
     // data.params.resize(N * 4);
 
     // root->printTree(data);
-    TraverseSOA visitor(root, data);
+    TraverseSOA visitor(root, *data);
 #endif
     visitor.go();
 
