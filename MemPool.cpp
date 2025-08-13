@@ -6,18 +6,16 @@
 #include <iostream>
 #include <sys/mman.h>
 
-static uint64_t align_up(uint64_t n, uint64_t align) { return (n + align - 1) & ~(align - 1); }
 
 namespace MemPool {
     void *MEM_POOL = nullptr;
-    size_t CHUNK_SIZE = 0;
     static void *AVAIL_PTR = nullptr; // next available
 
-    void memInit(size_t chunkSize) {
+    void memInit() {
         assert((MEM_POOL == 0) && "reinit mem pool");
-        CHUNK_SIZE = align_up(chunkSize, 64);
         std::cout << "CHUNK_SIZE = " << CHUNK_SIZE << std::endl;
-        MEM_POOL = mmap(nullptr, MEM_POOL_SIZE, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+        MEM_POOL = mmap((void*)MEM_POOL_START, MEM_POOL_SIZE, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+        assert(MEM_POOL == MEM_POOL_START);
         if (MEM_POOL == MAP_FAILED) {
             perror("mmap");
             exit(EXIT_FAILURE);

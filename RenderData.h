@@ -44,18 +44,17 @@ struct RenderData {
     bool hasOverlapWithParent;
     bool childOverlapsEachOtherAndThis; // children And This
 #endif
-    bool param1, param2, param3, param4;
     PlaceHolder<1024> g2;
-    PlaceHolder<1024*8> g3;
+    bool param1, param2, param3, param4;
+    PlaceHolder<1024*128> g3;
 };
 
 struct GlobalData {
-    boost::dynamic_bitset<> hasOverlap;
-    boost::dynamic_bitset<> hasChild;
-    boost::dynamic_bitset<> hasOverlapWithChild;
-    boost::dynamic_bitset<> hasOverlapWithParent;
-    boost::dynamic_bitset<> childOverlapsEachOtherAndThis;
-    boost::dynamic_bitset<> params;
+    std::bitset<512> hasOverlap;
+    std::bitset<512> hasChild;
+    std::bitset<512> hasOverlapWithChild;
+    std::bitset<512> hasOverlapWithParent;
+    std::bitset<512> childOverlapsEachOtherAndThis;
 
     std::vector<int> intersectAreaWithChild;
 #define DEFINE_BITSET_ACCESSORS(NAME)                                                                                  \

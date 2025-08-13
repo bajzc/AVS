@@ -20,16 +20,16 @@ int main() {
     TraverseAOS visitor(root);
 #endif
 #if SOA
-    MemPool::memInit(sizeof(Tree));
+    MemPool::memInit();
     assert(N * MemPool::CHUNK_SIZE < MEM_POOL_SIZE);
     Tree *root = createRandomTree(nodePerLevel, data);
     data.intersectAreaWithChild.resize(N);
-    data.hasOverlap.resize(N);
-    data.hasChild.resize(N);
-    data.hasOverlapWithChild.resize(N);
-    data.hasOverlapWithParent.resize(N);
-    data.childOverlapsEachOtherAndThis.resize(N);
-    data.params.resize(N * 4);
+    // data.hasOverlap.resize(N);
+    // data.hasChild.resize(N);
+    // data.hasOverlapWithChild.resize(N);
+    // data.hasOverlapWithParent.resize(N);
+    // data.childOverlapsEachOtherAndThis.resize(N);
+    // data.params.resize(N * 4);
 
     // root->printTree(data);
     TraverseSOA visitor(root, data);

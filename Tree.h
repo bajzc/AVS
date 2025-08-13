@@ -12,10 +12,9 @@ struct Tree {
     ~Tree() = default;
 
     int id;
-    bool visible = true;
 
-    std::vector<Tree *> children;
     RenderData data;
+    std::vector<Tree *> children;
 
 #ifdef AOS
 

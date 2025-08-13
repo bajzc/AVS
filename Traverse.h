@@ -98,19 +98,19 @@ struct TraverseAOS : Traverse {
             totalOverlap += 1;
         if (t->data.childOverlapsEachOtherAndThis)
             totalOverlap += 2;
-        for (auto child : t->children) {
-            if (t->data.hasOverlap && child->data.hasOverlapWithParent && child->data.hasOverlapWithChild) {
-                t->data.param1 = true;
-                t->data.param2 = true;
-                t->data.param3 = false;
-                t->data.param4 = false;
-            } else {
-                t->data.param1 = false;
-                t->data.param2 = false;
-                t->data.param3 = true;
-                t->data.param4 = true;
-            }
-        }
+        // for (auto child : t->children) {
+        //     if (t->data.hasOverlap && child->data.hasOverlapWithParent && child->data.hasOverlapWithChild) {
+        //         t->data.param1 = true;
+        //         t->data.param2 = true;
+        //         t->data.param3 = false;
+        //         t->data.param4 = false;
+        //     } else {
+        //         t->data.param1 = false;
+        //         t->data.param2 = false;
+        //         t->data.param3 = true;
+        //         t->data.param4 = true;
+        //     }
+        // }
     }
 };
 
@@ -144,8 +144,8 @@ struct TraverseSOA : Traverse {
     }
 
     void preCheck(Tree *t) override {
-        // auto id = MemPool::indexOf(t);
-        auto id = t->id;
+        auto id = MemPool::indexOf(t);
+        // auto id = t->id;
         data.w_hasChild(id, t->children.size());
         if (data.r_hasChild(id)) {
             data.w_hasOverlapWithChild(id, data.intersectAreaWithChild[id] > 0);
@@ -165,27 +165,13 @@ struct TraverseSOA : Traverse {
     }
 
     void postCheck(Tree *t) override {
-        auto id = t->id;
+        auto id = MemPool::indexOf(t);
+        // auto id = t->id;
         data.w_hasOverlap(id, data.r_hasOverlapWithParent(id) | data.r_hasOverlapWithChild(id));
         if (data.r_hasOverlap(id))
             totalOverlap += 1;
         if (data.r_childOverlapsEachOtherAndThis(id))
             totalOverlap += 2;
-        for (auto child: t->children) {
-            auto childId = MemPool::indexOf(child);
-            if (data.hasOverlap[id] && data.r_hasOverlapWithParent(childId) && data.r_hasOverlapWithChild(childId)) {
-                t->data.param1 = true;
-                t->data.param2 = true;
-                t->data.param3 = false;
-                t->data.param4 = false;
-            } else {
-                t->data.param1 = false;
-                t->data.param2 = false;
-                t->data.param3 = true;
-                t->data.param4 = true;
-
-            }
-        }
     }
 };
 #endif
